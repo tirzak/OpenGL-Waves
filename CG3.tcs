@@ -1,0 +1,46 @@
+#version 400
+layout (vertices = 4) out;
+
+
+// Input variables from the vertex shader
+in vec3 Normal_vs[];
+in vec2 uv_vs[];
+in vec3 FragPos_vs[];
+in vec3 eyePos_vs[];
+in vec3 lightDir_vs[];
+
+
+
+// Output data that will be passed to the tessellation evaluation shader
+out vec3 Normal_tcs[];
+out vec2 uv_tcs[];
+out vec3 FragPos_tcs[];
+out vec3 eyePos_tcs[];
+out vec3 lightDir_tcs[];
+
+// Uniform values that stay constant for the whole mesh
+uniform float outerTess;
+uniform float innerTess;
+
+void main() {
+    gl_out[ gl_InvocationID ].gl_Position = gl_in[ gl_InvocationID ].gl_Position;
+
+    // Pass the input vertex attributes to the corresponding output variables
+    Normal_tcs[gl_InvocationID] = Normal_vs[gl_InvocationID];
+    uv_tcs[gl_InvocationID] = uv_vs[gl_InvocationID];
+    FragPos_tcs[gl_InvocationID] = FragPos_vs[gl_InvocationID];
+    lightDir_tcs[gl_InvocationID] = lightDir_vs[gl_InvocationID];
+    eyePos_tcs[gl_InvocationID] = eyePos_vs[gl_InvocationID];
+
+    // Set the tessellation levels
+//if (gl_InvocationID == 0) {
+    // Set the tessellation levels
+    gl_TessLevelOuter[0] = outerTess;
+    gl_TessLevelOuter[1] = outerTess;
+    gl_TessLevelOuter[2] = outerTess;
+    gl_TessLevelOuter[3] = outerTess;
+    gl_TessLevelInner[0] = innerTess;
+    gl_TessLevelInner[1] = innerTess;
+//}
+
+}

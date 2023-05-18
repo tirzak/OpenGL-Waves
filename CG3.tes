@@ -1,0 +1,58 @@
+#version 400
+layout (quads, equal_spacing) in;
+
+
+in vec3 Normal_tcs[];
+in vec2 uv_tcs[];
+in vec3 FragPos_tcs[];
+in vec3 eyePos_tcs[];
+in vec3 lightDir_tcs[];
+
+
+out vec3 Normal_tes;
+out vec3 FragPos_tes;
+out vec3 eyePos_tes;
+out vec3 lightDir_tes;
+out vec2 uv_tes;
+
+
+
+
+void main() {
+
+    vec4 p0= gl_in[0].gl_Position;
+    vec4 p1= gl_in[1].gl_Position;
+    vec4 p2= gl_in[2].gl_Position;
+    vec4 p3= gl_in[3].gl_Position;
+
+    vec4 m1 = mix(p0, p1, gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    vec4 m2 = mix(p3, p2, gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    gl_Position = mix(m1, m2, gl_TessCoord.y);
+
+    vec3 c1 = mix(Normal_tcs[0], Normal_tcs[1], gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    vec3 c2 = mix(Normal_tcs[3], Normal_tcs[2], gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    Normal_tes = mix(c1, c2, gl_TessCoord.y);
+
+    c1 = mix(FragPos_tcs[0], FragPos_tcs[1], gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    c2 = mix(FragPos_tcs[3], FragPos_tcs[2], gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    FragPos_tes = mix(c1, c2, gl_TessCoord.y);
+
+
+
+    c1 = mix(eyePos_tcs[0], eyePos_tcs[1], gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    c2 = mix(eyePos_tcs[3], eyePos_tcs[2], gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    eyePos_tes = mix(c1, c2, gl_TessCoord.y);
+
+    c1 = mix(lightDir_tcs[0], lightDir_tcs[1], gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    c2 = mix(lightDir_tcs[3], lightDir_tcs[2], gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    lightDir_tes = mix(c1, c2, gl_TessCoord.y);
+
+    vec2 u1 = mix(uv_tcs[0], uv_tcs[1], gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    vec2 u2 = mix(uv_tcs[3], uv_tcs[2], gl_TessCoord.x);//may have to rearrange these numbers depending on your implementation
+    uv_tes = mix(u1, u2, gl_TessCoord.y);
+
+
+
+
+
+}

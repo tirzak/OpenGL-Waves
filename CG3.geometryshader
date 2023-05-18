@@ -1,0 +1,93 @@
+#version 400
+layout(triangles) in;
+layout(triangle_strip, max_vertices=3) out;
+
+in vec3 FragPos_tes[];
+in vec3 Normal_tes[];
+in vec3 lightDir_tes[];
+in vec3 eyePos_tes[];
+in vec2 uv_tes[];
+
+out vec3 FragPos_gs;
+out vec3 Normal_gs;
+out vec3 lightDir_gs;
+out vec3 eyePos_gs;
+out vec2 uv_gs;
+out vec3 triDistance;
+
+uniform mat4 M_gs;
+uniform mat4 V_gs;
+uniform mat4 MVP_gs;
+uniform mat4 P_gs;
+uniform float time_vs;
+uniform sampler2D displacementTexture;
+// Sample the displacement texture with a simple box filter
+
+
+vec3 GetNormal(vec4 a, vec4 b, vec4 c)
+{
+   vec3 x = b.xyz - a.xyz;
+   vec3 y = c.xyz - b.xyz;
+   return normalize(cross(x, y));
+}
+
+
+vec3 Gerstner(vec3 worldPos, float w, float A, float phi, float Q, vec2 D, int N) {
+    float dotProduct = dot(D, worldPos.xz);
+    float Qi = Q /  (w * A *float(N));
+
+    float x = Qi * A * D.x * cos(w * dotProduct + phi * time_vs);
+    float y = A * sin(w * dotProduct + phi * time_vs);
+    float z = Qi * A * D.y * cos(w * dotProduct + phi * time_vs);
+
+    return vec3(x, y, z);
+}
+
+
+void main() {
+    vec4 pos[3];
+    float displacements[3];
+    int mysz = gl_in.length();
+    float dispStrength = 0.01;
+
+    
+
+
+     for (int i = 0; i < gl_in.length(); ++i) {
+        
+         float heightDisplacement = texture(displacementTexture, uv_tes[i]).y;
+        heightDisplacement/=10;
+        pos[i] = vec4(FragPos_tes[i].x, FragPos_tes[i].y , FragPos_tes[i].z, 1.0);
+   
+        pos[i]+=  vec4(heightDisplacement* Normal_tes[i], 0);
+        
+        pos[i] += vec4(Gerstner(FragPos_tes[i], 4, 0.08, 1.1, 0.75, vec2(0.3, 0.6), 4), 0.0);
+        pos[i] += vec4(Gerstner(FragPos_tes[i], 2, 0.05, 1.1, 0.75, vec2(0.2, 0.866), 4), 0.0);
+       pos[i] += vec4(Gerstner(FragPos_tes[i], 0.6, 0.2, 0.4, 0.1, vec2(0.3, 0.7), 4), 0.0);
+        pos[i] += vec4(Gerstner(FragPos_tes[i], 0.9, 0.15, 0.4, 0.1, vec2(0.8, 0.1), 4), 0.0);
+	
+    }
+    vec3 mynorm = GetNormal(pos[0], pos[1], pos[2]);
+
+   vec3 triDistances[3];
+   triDistances[0]=vec3(1, 0, 0);
+   triDistances[1]=vec3(0, 1, 0);
+   triDistances[2]=vec3(0, 0, 1);
+    for (int i = 0; i < mysz; ++i) {
+       
+       gl_Position = MVP_gs*pos[i];
+        FragPos_gs = (pos[i]).xyz;
+        Normal_gs = (P_gs*V_gs*vec4(mynorm,0.0)).xyz;
+        lightDir_gs = (vec4(lightDir_tes[i],1.0)).xyz;
+        eyePos_gs = (vec4(eyePos_tes[i],1.0)).xyz;
+        uv_gs = uv_tes[i];
+        triDistance=triDistances[i];
+        EmitVertex();
+    }
+    EndPrimitive();
+}
+
+
+
+
+

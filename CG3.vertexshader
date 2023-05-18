@@ -1,0 +1,37 @@
+#version 400
+layout (location = 0) in vec3 vertsCoords;
+layout (location = 1) in vec3 normalCoords;
+
+out vec3 FragPos_vs;
+out vec3 Normal_vs;
+out vec3 lightDir_vs;
+out vec3 eyePos_vs;
+out vec2 uv_vs;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 MVP;
+uniform vec3 cameraPos;
+uniform vec3 lightPos;
+uniform vec2 texOffset;
+uniform float texScale;
+uniform float time_vs;
+
+void main()
+{
+    vec3 Position_worldspace = vec3(model * vec4(vertsCoords, 1.0));
+    uv_vs = (Position_worldspace.xz + texOffset + (time_vs * 0.08)) / texScale; 
+    //uv_vs=Position_worldspace.xz;
+    FragPos_vs = Position_worldspace;
+    Normal_vs = (model*vec4(normalCoords,0)).xyz; 
+    lightDir_vs = normalize(lightPos - FragPos_vs);
+   
+    gl_Position = model*vec4(vertsCoords, 1.0);
+
+     vec3 vertexPosition_cameraspace = ( view * model * vec4(vertsCoords,1)).xyz;
+    eyePos_vs = vec3(0,0,0) - vertexPosition_cameraspace;
+
+    vec3 LightPosition_cameraspace = ( view * vec4(lightPos,1)).xyz;
+    lightDir_vs = LightPosition_cameraspace + eyePos_vs;
+
+}
