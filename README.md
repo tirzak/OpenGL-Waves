@@ -1,3 +1,7 @@
+## Demon
+![Image Description](./Assets/Front.jpg)
+
+
 There are two sources (camera.cpp and L21.cpp) and some header files.
 Overview:
 L21.cpp loads the texture (loadMyTexture function), sets the uniforms (setMyShaderUniforms function), and draws the plane mesh. The textures are divided by a factor to reduce scale. 
