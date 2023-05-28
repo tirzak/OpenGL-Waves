@@ -15,7 +15,7 @@ Shaders:
 The shaders are in files CG3.vertexshader, CG3.tcs, CG3.tes, and CG3.fragmentshader. 
 Tessellation shaders tessellates the mesh. Geometry shader samples the displacement map and modifies the vertices (Displacement and Gerstner). It uses the modelspace positions received from TES. Gerstner function computes the vertex modifications (4 waves have been used). 
 Geometry shader also calculates the normals.
-uvs' are adjusted as per the Lecture 17 in fragmentshader. Phong like shading is used to color the mesh, and the base color is derived from the provided texture file. 
+Phong like shading is used to color the mesh, and the base color is derived from the provided texture file. 
 
 Cam Controls:
 Globe movement camera. Up and Down arrow key to adjust radius. Use click and drag to rotate around.
